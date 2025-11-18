@@ -1,0 +1,190 @@
+/* =========
+   PALETA GENERAL
+   ========= */
+:root {
+    --fotocopia-azul-oscuro: #003c8f;
+    --fotocopia-azul: #1565c0;
+    --fotocopia-azul-claro: #1e88e5;
+    --fotocopia-verde: #00bfa5;
+    --fotocopia-gris-fondo: #f4f7fb;
+}
+
+/* Fondo general del body */
+body {
+    background-color: var(--fotocopia-gris-fondo);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* =========
+   NAVBAR
+   ========= */
+.navbar-fotocopia {
+    background: linear-gradient(90deg, var(--fotocopia-azul-oscuro), var(--fotocopia-azul));
+    box-shadow: 0 2px 10px rgba(0, 0, 0, .25);
+}
+
+.navbar-fotocopia .navbar-brand,
+.navbar-fotocopia .nav-link {
+    color: #ffffff !important;
+    font-weight: 500;
+}
+
+.navbar-fotocopia .nav-link:hover {
+    text-decoration: underline;
+}
+
+.navbar-brand img {
+    max-height: 36px;
+    margin-right: 8px;
+}
+
+/* =========
+   CARDS Y CONTENEDORES
+   ========= */
+.card {
+    border-radius: 0.75rem;
+    border: none;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+    background-color: #ffffff;
+}
+
+.card-header {
+    background: linear-gradient(90deg, var(--fotocopia-azul), var(--fotocopia-azul-claro)) !important;
+    border-bottom: none;
+}
+
+.card-header h3,
+.card-header h4,
+.card-header h5 {
+    margin: 0;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+/* =========
+   BOTONES
+   ========= */
+.btn-primary {
+    background-color: var(--fotocopia-azul) !important;
+    border-color: var(--fotocopia-azul) !important;
+}
+
+.btn-primary:hover {
+    background-color: var(--fotocopia-azul-oscuro) !important;
+    border-color: var(--fotocopia-azul-oscuro) !important;
+}
+
+.btn-success {
+    background-color: var(--fotocopia-verde) !important;
+    border-color: var(--fotocopia-verde) !important;
+}
+
+.btn-success:hover {
+    background-color: #009982 !important;
+    border-color: #009982 !important;
+}
+
+.btn-warning {
+    background-color: #ffa000 !important;
+    border-color: #ffa000 !important;
+    color: #000 !important;
+}
+
+.btn-danger {
+    background-color: #c62828 !important;
+    border-color: #c62828 !important;
+}
+
+/* =========
+   TABLAS
+   ========= */
+.table thead,
+.table thead tr {
+    background-color: var(--fotocopia-azul) !important;
+    color: #ffffff;
+}
+
+.table thead th {
+    border-color: var(--fotocopia-azul) !important;
+}
+
+.table tbody tr:hover {
+    background-color: #e3f2fd;
+}
+
+/* =========
+   FORMULARIOS
+   ========= */
+label {
+    font-weight: 500;
+}
+
+.form-control,
+.form-select {
+    border-radius: 0.5rem;
+    border: 1px solid #cfd8dc;
+    box-shadow: none;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--fotocopia-azul-claro);
+    box-shadow: 0 0 0 0.2rem rgba(21, 101, 192, 0.2);
+}
+
+/* =========
+   ALERTAS
+   ========= */
+.alert-success {
+    border-left: 4px solid var(--fotocopia-verde);
+}
+
+.alert-danger {
+    border-left: 4px solid #c62828;
+}
+
+/* =========
+   TEXTOS Y LINKS
+   ========= */
+h3, h4, h5 {
+    color: var(--fotocopia-azul-oscuro);
+}
+
+a {
+    color: var(--fotocopia-azul);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--fotocopia-azul-claro);
+    text-decoration: underline;
+}
+
+/* =========
+   PÁGINAS DE LOGIN/REGISTRO
+   ========= */
+body.bg-light {
+    background: radial-gradient(circle at top, #e3f2fd, #f4f7fb);
+}
+
+/* =========
+   BADGES / ESTADOS
+   ========= */
+.badge.bg-success {
+    background-color: var(--fotocopia-verde) !important;
+}
+
+.badge.bg-secondary {
+    background-color: #90a4ae !important;
+}
+
+/* =========
+   FOOTER (si algún día lo usas)
+   ========= */
+.footer-fotocopia {
+    margin-top: 3rem;
+    padding: 1rem 0;
+    font-size: 0.85rem;
+    text-align: center;
+    color: #607d8b;
+}
