@@ -128,4 +128,19 @@ public class PrecioDAO {
         }
         return false;
     }
+    public boolean eliminar(int id) {
+    String sql = "DELETE FROM precios WHERE id = ?";
+
+    try (Connection con = Conexion.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+
+        ps.setInt(1, id);
+        return ps.executeUpdate() > 0;
+
+    } catch (SQLException e) {
+        System.out.println("❌ Error al eliminar precio: " + e.getMessage());
+    }
+    return false;
+}
+
 }

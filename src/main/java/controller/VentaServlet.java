@@ -93,30 +93,42 @@ public class VentaServlet extends HttpServlet {
         }
     }
 
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+   @Override
+protected void doPost(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
 
-        Usuario u = getUsuarioSesion(request, response);
-        if (u == null) return;
+    Usuario u = getUsuarioSesion(request, response);
+    if (u == null) return;
 
-        String tipoVenta = request.getParameter("tipoVenta"); // COPIA o PRODUCTO
+    String tipoVenta = request.getParameter("tipoVenta"); // COPIA o PRODUCTO
 
-        Venta v = new Venta();
-        v.setUsuario(u);
-        v.setTipoVenta(tipoVenta);
-        Turno turno = turnoDAO.obtenerTurnoActual();
-        v.setTurno(turno);
+    Venta v = new Venta();
+    v.setUsuario(u);
+    v.setTipoVenta(tipoVenta);
 
-        DetalleVenta det = new DetalleVenta();
+    Turno turno = turnoDAO.obtenerTurnoActual();
+    v.setTurno(turno);
 
+    DetalleVenta det = new DetalleVenta();
+
+    try {
+
+        // ===================== VENTA DE COPIA =====================
         if ("COPIA".equalsIgnoreCase(tipoVenta)) {
-            int precioId = Integer.parseInt(request.getParameter("precioIdCopia"));
+
+            String precioIdStr = request.getParameter("precioId");
+            if (precioIdStr == null || precioIdStr.trim().isEmpty()) {
+                request.setAttribute("error", "Debe seleccionar un precio de copia.");
+                doGet(request, response);
+                return;
+            }
+
+            int precioId = Integer.parseInt(precioIdStr);
             int cantidad = Integer.parseInt(request.getParameter("cantidad"));
 
             Precio p = precioDAO.buscarPorId(precioId);
             if (p == null) {
-                request.setAttribute("error", "Precio de copia no válido");
+                request.setAttribute("error", "Precio de copia no válido.");
                 doGet(request, response);
                 return;
             }
@@ -124,33 +136,50 @@ public class VentaServlet extends HttpServlet {
             double precioUnit = p.getPrecio();
             double subtotal = precioUnit * cantidad;
 
-            det.setTipoCopia(p.getTipo()); // Ej: COPIA_BN o COPIA_COLOR
+            det.setTipoCopia(p.getTipo());   // Ej: COPIA_BN, COPIA_COLOR, etc.
             det.setCantidad(cantidad);
             det.setPrecioUnitario(precioUnit);
             det.setSubtotal(subtotal);
 
             v.setTotal(subtotal);
+        }
 
-        } else if ("PRODUCTO".equalsIgnoreCase(tipoVenta)) {
-            int productoId = Integer.parseInt(request.getParameter("productoId"));
+        // ===================== VENTA DE PRODUCTO =====================
+        else if ("PRODUCTO".equalsIgnoreCase(tipoVenta)) {
+
+            String prodIdStr = request.getParameter("productoId");
+            if (prodIdStr == null || prodIdStr.trim().isEmpty()) {
+                request.setAttribute("error", "Debe seleccionar un producto.");
+                doGet(request, response);
+                return;
+            }
+
+            int productoId = Integer.parseInt(prodIdStr);
             int cantidad = Integer.parseInt(request.getParameter("cantidad"));
 
             Producto prod = productoDAO.buscarPorId(productoId);
             if (prod == null) {
-                request.setAttribute("error", "Producto no válido");
+                request.setAttribute("error", "Producto no válido.");
                 doGet(request, response);
                 return;
             }
 
             double precioUnit = prod.getPrecioUnitario();
-            double subtotal = precioUnit * cantidad;
+            double subtotal   = precioUnit * cantidad;
 
-            det.setProducto(prod);
+            det.setProducto(prod);          // para guardar producto_id en detalle_venta
             det.setCantidad(cantidad);
             det.setPrecioUnitario(precioUnit);
             det.setSubtotal(subtotal);
 
             v.setTotal(subtotal);
+        }
+
+        // Si no es COPIA ni PRODUCTO (algo raro)
+        else {
+            request.setAttribute("error", "Tipo de venta no válido.");
+            doGet(request, response);
+            return;
         }
 
         boolean ok = ventaDAO.registrarVenta(v, det);
@@ -161,6 +190,12 @@ public class VentaServlet extends HttpServlet {
             request.setAttribute("mensaje", "Venta registrada correctamente");
         }
 
-        doGet(request, response);
+    } catch (NumberFormatException e) {
+        e.printStackTrace();
+        request.setAttribute("error", "Datos numéricos inválidos (cantidad / precio / id).");
     }
+
+    doGet(request, response);
+}
+
 }

@@ -216,58 +216,113 @@ public class VentaDAO {
     // (Ya tenías) listarTodas / listarPorUsuario si las usas en historial
     // ============================
     public List<Venta> listarTodas() {
-        List<Venta> lista = new ArrayList<>();
-        String sql = "SELECT v.*, u.nombre AS usuario_nombre " +
-                     "FROM ventas v JOIN usuarios u ON v.usuario_id = u.id " +
-                     "ORDER BY v.fecha_hora DESC";
-        try (Connection con = Conexion.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                Venta v = new Venta();
-                Usuario u = new Usuario();
-                v.setId(rs.getInt("id"));
-                v.setFechaHora(rs.getTimestamp("fecha_hora"));
-                v.setTipoVenta(rs.getString("tipo_venta"));
-                v.setTotal(rs.getDouble("total"));
-                v.setActivo(rs.getBoolean("activo"));
-                u.setId(rs.getInt("usuario_id"));
-                u.setNombre(rs.getString("usuario_nombre"));
-                v.setUsuario(u);
-                lista.add(v);
+    List<Venta> lista = new ArrayList<>();
+
+    String sql = "SELECT v.*, " +
+                 "u.nombre AS usuario_nombre, u.usuario AS usuario_login, " +
+                 "t.id AS turno_id, t.nombre AS turno_nombre " +
+                 "FROM ventas v " +
+                 "JOIN usuarios u ON v.usuario_id = u.id " +
+                 "LEFT JOIN turnos t ON v.turno_id = t.id " +
+                 "ORDER BY v.fecha_hora DESC";
+
+    try (Connection con = Conexion.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        while (rs.next()) {
+            Venta v = new Venta();
+            Usuario u = new Usuario();
+
+            // Campos de venta
+            v.setId(rs.getInt("id"));
+            v.setFechaHora(rs.getTimestamp("fecha_hora"));
+            v.setTipoVenta(rs.getString("tipo_venta"));
+            v.setTotal(rs.getDouble("total"));
+            v.setActivo(rs.getBoolean("activo"));
+
+            // Usuario
+            u.setId(rs.getInt("usuario_id"));
+            u.setNombre(rs.getString("usuario_nombre"));
+            u.setUsuario(rs.getString("usuario_login"));
+            v.setUsuario(u);
+
+            // Turno (puede ser null)
+            Object turnoObj = rs.getObject("turno_id");
+            if (turnoObj != null) {
+                Turno t = new Turno();
+                t.setId(rs.getInt("turno_id"));
+                t.setNombre(rs.getString("turno_nombre"));
+                v.setTurno(t);
+            } else {
+                v.setTurno(null);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+
+            lista.add(v);
         }
-        return lista;
+
+    } catch (Exception e) {
+        e.printStackTrace();
     }
 
-    public List<Venta> listarPorUsuario(int usuarioId) {
-        List<Venta> lista = new ArrayList<>();
-        String sql = "SELECT v.*, u.nombre AS usuario_nombre " +
-                     "FROM ventas v JOIN usuarios u ON v.usuario_id = u.id " +
-                     "WHERE v.usuario_id = ? " +
-                     "ORDER BY v.fecha_hora DESC";
-        try (Connection con = Conexion.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, usuarioId);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                Venta v = new Venta();
-                Usuario u = new Usuario();
-                v.setId(rs.getInt("id"));
-                v.setFechaHora(rs.getTimestamp("fecha_hora"));
-                v.setTipoVenta(rs.getString("tipo_venta"));
-                v.setTotal(rs.getDouble("total"));
-                v.setActivo(rs.getBoolean("activo"));
-                u.setId(rs.getInt("usuario_id"));
-                u.setNombre(rs.getString("usuario_nombre"));
-                v.setUsuario(u);
-                lista.add(v);
+    return lista;
+}
+
+
+   public List<Venta> listarPorUsuario(int usuarioId) {
+    List<Venta> lista = new ArrayList<>();
+
+    String sql = "SELECT v.*, " +
+                 "u.nombre AS usuario_nombre, u.usuario AS usuario_login, " +
+                 "t.id AS turno_id, t.nombre AS turno_nombre " +
+                 "FROM ventas v " +
+                 "JOIN usuarios u ON v.usuario_id = u.id " +
+                 "LEFT JOIN turnos t ON v.turno_id = t.id " +
+                 "WHERE v.usuario_id = ? " +
+                 "ORDER BY v.fecha_hora DESC";
+
+    try (Connection con = Conexion.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+
+        ps.setInt(1, usuarioId);
+        ResultSet rs = ps.executeQuery();
+
+        while (rs.next()) {
+            Venta v = new Venta();
+            Usuario u = new Usuario();
+
+            // Venta
+            v.setId(rs.getInt("id"));
+            v.setFechaHora(rs.getTimestamp("fecha_hora"));
+            v.setTipoVenta(rs.getString("tipo_venta"));
+            v.setTotal(rs.getDouble("total"));
+            v.setActivo(rs.getBoolean("activo"));
+
+            // Usuario
+            u.setId(rs.getInt("usuario_id"));
+            u.setNombre(rs.getString("usuario_nombre"));
+            u.setUsuario(rs.getString("usuario_login"));
+            v.setUsuario(u);
+
+            // Turno
+            Object turnoObj = rs.getObject("turno_id");
+            if (turnoObj != null) {
+                Turno t = new Turno();
+                t.setId(rs.getInt("turno_id"));
+                t.setNombre(rs.getString("turno_nombre"));
+                v.setTurno(t);
+            } else {
+                v.setTurno(null);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+
+            lista.add(v);
         }
-        return lista;
+
+    } catch (Exception e) {
+        e.printStackTrace();
     }
+
+    return lista;
+}
+
 }

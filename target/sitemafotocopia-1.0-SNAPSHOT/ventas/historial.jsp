@@ -38,7 +38,7 @@
                         <th>Turno</th>
                         <th>Total ($)</th>
                         <th>Estado</th>
-                        <th>Acciones</th>
+                 
                     </tr>
                 </thead>
                 <tbody>
@@ -61,18 +61,7 @@
                                 <span class="badge bg-secondary">Anulada</span>
                             <% } %>
                         </td>
-                        <td>
-    <a class="btn btn-sm btn-warning"
-       href="<%= request.getContextPath() %>/historial?accion=editar&id=<%= v.getId() %>">
-        Editar
-    </a>
-
-    <a class="btn btn-sm btn-danger"
-       href="<%= request.getContextPath() %>/historial?accion=eliminar&id=<%= v.getId() %>"
-       onclick="return confirm('¿Seguro que quieres eliminar esta venta?');">
-        Eliminar
-    </a>
-</td>
+                        
 
                     </tr>
                 <%

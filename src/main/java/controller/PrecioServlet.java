@@ -41,6 +41,13 @@ public class PrecioServlet extends HttpServlet {
                 request.getRequestDispatcher("precios/form.jsp").forward(request, response);
                 break;
             }
+            case "eliminar":
+                int id = Integer.parseInt(request.getParameter("id"));
+                precioDAO.eliminar(id); // o desactivar
+                response.sendRedirect("precios?accion=listar");
+                break;
+
+            
 
             default: {
                 List<Precio> lista = precioDAO.listar();

@@ -34,7 +34,7 @@ public class ProductoServlet extends HttpServlet {
         return u;
     }
 
-    // 👉 Validar que el rol sea ADMINISTRADOR o OPERADOR
+    // 👉 Validar que el rol sea ADMINISTRADOR o OPERADOR (NO CLIENTE)
     private boolean sinPermiso(Usuario u, HttpServletResponse response) throws IOException {
 
         if (u == null || u.getRol() == null || u.getRol().getNombre() == null) {
@@ -47,7 +47,7 @@ public class ProductoServlet extends HttpServlet {
         if ("ADMINISTRADOR".equalsIgnoreCase(rol)) return false;
         if ("OPERADOR".equalsIgnoreCase(rol)) return false;
 
-        // 👉 Si es CLIENTE → NO entra
+        // 👉 Si es CLIENTE u otro rol raro → NO entra
         response.sendRedirect("home.jsp");
         return true;
     }
@@ -58,24 +58,33 @@ public class ProductoServlet extends HttpServlet {
 
         Usuario u = getUsuarioSesion(request, response);
         if (u == null) return;
-        if (sinPermiso(u, response)) return;
 
         String accion = request.getParameter("accion");
         if (accion == null) accion = "listar";
 
         switch (accion) {
+
             case "nuevo":
+                // Solo ADMIN y OPERADOR
+                if (sinPermiso(u, response)) return;
                 request.getRequestDispatcher("productos/form.jsp").forward(request, response);
                 break;
 
             case "editar":
-                int id = Integer.parseInt(request.getParameter("id"));
-                Producto p = productoDAO.buscarPorId(id);
-                request.setAttribute("producto", p);
-                request.getRequestDispatcher("productos/form.jsp").forward(request, response);
+                // Solo ADMIN y OPERADOR
+                if (sinPermiso(u, response)) return;
+                try {
+                    int id = Integer.parseInt(request.getParameter("id"));
+                    Producto p = productoDAO.buscarPorId(id);
+                    request.setAttribute("producto", p);
+                    request.getRequestDispatcher("productos/form.jsp").forward(request, response);
+                } catch (NumberFormatException e) {
+                    response.sendRedirect("productos?accion=listar");
+                }
                 break;
 
-            default:
+            default: // "listar"
+                // 💡 AQUÍ SÍ PUEDE ENTRAR TAMBIÉN EL CLIENTE (solo a ver)
                 request.setAttribute("listaProductos", productoDAO.listar());
                 request.getRequestDispatcher("productos/lista.jsp").forward(request, response);
         }
@@ -87,6 +96,8 @@ public class ProductoServlet extends HttpServlet {
 
         Usuario u = getUsuarioSesion(request, response);
         if (u == null) return;
+
+        // Solo ADMIN y OPERADOR pueden guardar (crear/editar)
         if (sinPermiso(u, response)) return;
 
         String idStr       = request.getParameter("id");

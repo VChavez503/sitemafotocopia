@@ -16,7 +16,7 @@
 
     <!-- Filtros -->
     <div class="card shadow mb-3">
-        <div class="card-header text-white">
+        <div class="card-header text-white bg-primary">
             <h4 class="mb-0">Reporte por turno</h4>
         </div>
         <div class="card-body">
@@ -24,7 +24,7 @@
                 <input type="hidden" name="tipo" value="turno">
 
                 <div class="col-md-4">
-                    <label>Turno</label>
+                    <label class="form-label">Turno</label>
                     <select name="turno" class="form-select" required>
                         <option value="AM">Mañana (AM)</option>
                         <option value="PM">Tarde (PM)</option>
@@ -32,7 +32,7 @@
                 </div>
 
                 <div class="col-md-4">
-                    <label>Fecha</label>
+                    <label class="form-label">Fecha</label>
                     <input type="date" name="fecha" class="form-control" required>
                 </div>
 
@@ -45,10 +45,20 @@
 
     <!-- Resultados -->
     <div class="card shadow">
-        <div class="card-header text-white">
+        <div class="card-header text-white bg-primary">
             <h5 class="mb-0">Resultados</h5>
         </div>
         <div class="card-body">
+            <%
+                List<Venta> lista = (List<Venta>) request.getAttribute("listaVentas");
+                if (lista == null || lista.isEmpty()) {
+            %>
+                <div class="alert alert-info">
+                    No hay ventas para el turno y fecha seleccionados.
+                </div>
+            <%
+                } else {
+            %>
             <table class="table table-bordered table-striped align-middle">
                 <thead>
                 <tr>
@@ -60,22 +70,23 @@
                 </thead>
                 <tbody>
                 <%
-                    List<Venta> lista = (List<Venta>) request.getAttribute("listaVentas");
-                    if (lista != null) {
-                        for (Venta v : lista) {
+                    for (Venta v : lista) {
                 %>
                 <tr>
                     <td><%= v.getFechaHora() %></td>
-                    <td><%= v.getUsuario() != null ? v.getUsuario().getUsuario() : "" %></td>
+                    <!-- Aquí el cambio: mostramos el NOMBRE del usuario -->
+                    <td><%= (v.getUsuario() != null && v.getUsuario().getNombre() != null) ? v.getUsuario().getNombre() : "" %></td>
                     <td><%= v.getTipoVenta() %></td>
-                    <td><%= v.getTotal() %></td>
+                    <td>$<%= String.format(java.util.Locale.US, "%.2f", v.getTotal()) %></td>
                 </tr>
                 <%
-                        }
                     }
                 %>
                 </tbody>
             </table>
+            <%
+                }
+            %>
         </div>
     </div>
 
